@@ -22,7 +22,7 @@ API_KEY = os.getenv('GOOGLE_CHAT_API_KEY')
 
 google_chat_model = ChatGoogleGenerativeAI(
     model='gemini-1.5-flash',
-    api_key='AIzaSyAcFeg5povb1BkSfXidqsL2a6Ov03zAxx4'
+    api_key=''#add your google API key
 )
 
 speech_to_text = pipeline(

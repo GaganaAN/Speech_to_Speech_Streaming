@@ -1,5 +1,5 @@
 # Speech_to_Speech_Streaming
-This project allows users to upload a video, specify a target language for translation, and processes the video for translation. It uses a speech-to-speech approach to translate spoken content in a video and outputs the translated video.
+This project provides an automated system to translate the audio of video files into a target language. It involves transcribing the audio from the video, translating the transcribed text, converting the translated text into speech, adjusting the generated speech to match the video's audio duration, and replacing the original audio with the translated audio. The system uses advanced technologies like automatic speech recognition, machine translation, and text-to-speech conversion to create a seamless translation experience for multimedia content.
 ## Features:
 - Upload a video file for processing.
 - Specify a target language for translation.

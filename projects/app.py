@@ -11,14 +11,12 @@ import subprocess
 app = Flask(__name__, static_folder='projects/static/uploads')
 
 UPLOAD_FOLDER = 'projects/static/uploads'  
-ALLOWED_EXTENSIONS = {'mp4', 'mp3'}
+ALLOWED_EXTENSIONS = {'mp4'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # Limit to 50 MB
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
-
-API_KEY = os.getenv('GOOGLE_CHAT_API_KEY')
 
 google_chat_model = ChatGoogleGenerativeAI(
     model='gemini-1.5-flash',
@@ -120,4 +118,4 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

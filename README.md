@@ -6,3 +6,4 @@ This project provides an automated system to translate the audio of video files 
 - Translate spoken content from the video in real-time.
 - Display the processed video after translation.
 - Display the video name dynamically after the video has been processed.
+### Static/uploads folder contains the input video, intermediate processed files and the final output video file.

@@ -51,32 +51,17 @@ def convert_to_audio(text, output_file="output_audio.mp3"):
 
 def adjust_audio_speed(audio_file, target_duration, output_file="adjusted_audio.mp3"):
     output_path = os.path.join(app.config['UPLOAD_FOLDER'], output_file)
-    audio = AudioSegment.from_file(audio_file)
-    current_duration = audio.duration_seconds
-    speed_factor = current_duration / target_duration
-    adjusted_audio = audio._spawn(audio.raw_data, overrides={
-        "frame_rate": int(audio.frame_rate * speed_factor)
-    }).set_frame_rate(audio.frame_rate)
-    adjusted_audio.export(output_path, format="mp3")
-    return output_path
-
-def convert_video_to_audio(video_file_path, output_audio_file="output_audio.mp3"):
-    output_path = os.path.join(app.config['UPLOAD_FOLDER'], output_audio_file)
-    video = VideoFileClip(video_file_path)
-    video.audio.write_audiofile(output_path)
-    return output_path
-
-def replace_audio_with_ffmpeg(original_video_path, translated_audio_path, output_video_path="output_video.mp4"):
-    output_path = os.path.join(app.config['UPLOAD_FOLDER'], output_video_path)
     try:
+        # Calculate the speed factor based on duration
+        current_duration = AudioSegment.from_file(audio_file).duration_seconds
+        speed_factor = current_duration / target_duration
+        
+        # Use ffmpeg to adjust the audio speed
         command = [
             "ffmpeg",
-            "-i", original_video_path,
-            "-i", translated_audio_path,
-            "-c:v", "copy",
-            "-c:a", "aac",
-            "-map", "0:v:0",
-            "-map", "1:a:0",
+            "-i", audio_file,
+            "-filter:a", f"atempo={speed_factor}",  # Adjust tempo (audio speed)
+            "-vn",  # No video output
             output_path
         ]
         subprocess.run(command, check=True)
@@ -84,6 +69,34 @@ def replace_audio_with_ffmpeg(original_video_path, translated_audio_path, output
     except subprocess.CalledProcessError as e:
         print(f"Error in FFmpeg: {e}")
         return None
+
+
+def convert_video_to_audio(video_file_path, output_audio_file="output_audio.mp3"):
+    output_path = os.path.join(app.config['UPLOAD_FOLDER'], output_audio_file)
+    video = VideoFileClip(video_file_path)
+    video.audio.write_audiofile(output_path)
+    return output_path
+def replace_audio_with_ffmpeg(original_video_path, translated_audio_path, output_video_path="output_video.mp4"):
+    output_path = os.path.join(app.config['UPLOAD_FOLDER'], output_video_path)
+    try:
+        # Remove original audio (-an flag) and replace with the translated audio
+        command = [
+            "ffmpeg",
+            "-i", original_video_path,        # Input video file
+            "-i", translated_audio_path,      # Input translated audio file
+            "-c:v", "copy",                   # Copy the video stream without re-encoding
+            "-c:a", "aac",                    # Encode the new audio as AAC
+            "-map", "0:v:0",                  # Map video stream from input 0 (original video)
+            "-map", "1:a:0",                  # Map audio stream from input 1 (new audio) 
+            "-shortest",                           # Disable the original audio
+            output_path
+        ]
+        subprocess.run(command, check=True)
+        return output_path
+    except subprocess.CalledProcessError as e:
+        print(f"Error in FFmpeg: {e}")
+        return None
+
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
